@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:sc_client/core/widgets/sca_text_button.dart';
 
 import '../const/colors.dart';
 
@@ -13,12 +12,12 @@ class SCAAppbar extends StatelessWidget implements PreferredSizeWidget {
     return AppBar(
       title: Text(title),
       actions: [
-        ElevatedButton(onPressed: null, child: Text("Sign In")),
-        Container(
-          child: VerticalDivider(),
+        const ElevatedButton(onPressed: null, child: Text("Sign In")),
+        const SizedBox(
           height: kToolbarHeight * 0.75,
+          child: VerticalDivider(),
         ),
-        ElevatedButton(onPressed: null, child: Text("Register"), style: ElevatedButton.styleFrom(primary: brandGoldColor)),
+        ElevatedButton(onPressed: null, style: ElevatedButton.styleFrom(backgroundColor: brandGoldColor), child: const Text("Register")),
       ],
       bottom: const _AppBarGoldenLine(),
       toolbarHeight: kToolbarHeight * 2,
@@ -30,7 +29,7 @@ class SCAAppbar extends StatelessWidget implements PreferredSizeWidget {
 }
 
 class _AppBarGoldenLine extends StatelessWidget implements PreferredSizeWidget {
-  const _AppBarGoldenLine({super.key});
+  const _AppBarGoldenLine({Key? key}): super(key: key);
 
   @override
   Widget build(BuildContext context) {

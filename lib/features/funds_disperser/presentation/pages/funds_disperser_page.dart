@@ -2,8 +2,6 @@ import 'package:currency_text_input_formatter/currency_text_input_formatter.dart
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:go_router/go_router.dart';
-import 'package:intl/intl.dart';
-import 'package:sc_client/core/const/colors.dart';
 import 'package:sc_client/core/utils/form_factor.dart';
 
 import '../../../../core/widgets/sca_scaffold.dart';
@@ -69,7 +67,7 @@ class _Page extends StatelessWidget {
 }
 
 class _BackgroundImage extends StatelessWidget {
-  const _BackgroundImage({super.key});
+  const _BackgroundImage({Key? key}): super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -83,7 +81,7 @@ class _BackgroundImage extends StatelessWidget {
 }
 
 class _Content extends StatefulWidget {
-  const _Content({super.key});
+  const _Content({Key? key}): super(key: key);
 
   @override
   State<_Content> createState() => _ContentState();
@@ -120,13 +118,13 @@ class _ContentState extends State<_Content> {
       }
       return "Please enter an amount";
     }
-    double? _value = double.tryParse(value.replaceAll(",", ""));
-    if (_value == null) {
+    double? newValue = double.tryParse(value.replaceAll(",", ""));
+    if (newValue == null) {
       return "Please enter a valid number";
     }
-    if (_value < (min ?? double.negativeInfinity)) {
+    if (newValue < (min ?? double.negativeInfinity)) {
       return "Please enter a value between ${min ?? double.negativeInfinity} and ${max ?? double.infinity}";
-    } else if (_value > (max ?? double.infinity)) {
+    } else if (newValue > (max ?? double.infinity)) {
       return "Please enter a value between ${min ?? double.negativeInfinity} and ${max ?? double.infinity}";
     }
     return null;
@@ -136,13 +134,13 @@ class _ContentState extends State<_Content> {
     if (value == null || value.isEmpty) {
       return "Please enter an amount";
     }
-    int? _value = int.tryParse(value.replaceAll(",", ""));
-    if (_value == null) {
+    int? newValue = int.tryParse(value.replaceAll(",", ""));
+    if (newValue == null) {
       return "Please enter a valid number";
     }
-    if (min != null && _value < min) {
+    if (min != null && newValue < min) {
       return "Please enter a value greater than $min";
-    } else if (max != null && _value > max) {
+    } else if (max != null && newValue > max) {
       return "Please enter a value less than $max";
     }
     return null;

@@ -55,7 +55,7 @@ class SCAScaffold extends StatelessWidget {
 }
 
 class _VersionBuilder extends StatelessWidget {
-  const _VersionBuilder({super.key});
+  const _VersionBuilder({Key? key}): super(key: key);
 
   @override
   Widget build(BuildContext context) {
