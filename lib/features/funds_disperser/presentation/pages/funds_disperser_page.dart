@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:sc_client/core/const/colors.dart';
+import 'package:sc_client/core/utils/form_factor.dart';
 
 import '../../../../core/widgets/sca_scaffold.dart';
 
@@ -220,166 +221,220 @@ class _ContentState extends State<_Content> {
     _value = _calculatePayout(_boxQuantity, _boxValue, _partyMembers, _feePercentage);
   }
 
+  Widget _getBoxQuantityField() {
+    return TextFormField(
+      key: _boxQuantityKey,
+      controller: _boxQuantityController,
+      decoration: const InputDecoration(
+        labelText: "Number of boxes",
+        hintText: "120",
+      ),
+      inputFormatters: [
+        _formatter,
+      ],
+      style: const TextStyle(fontSize: 20),
+      autovalidateMode: AutovalidateMode.onUserInteraction,
+      validator: (value) => _parseIntValidator(value, min: 1),
+      onChanged: _boxQuantityChanged,
+    );
+  }
+
+  Widget _getBoxValueField() {
+    return TextFormField(
+      key: _boxValueKey,
+      controller: _boxValueController,
+      inputFormatters: [
+        _formatter,
+      ],
+      decoration: const InputDecoration(
+        labelText: "Box Value",
+        hintText: "20000",
+        suffix: Text("aUEC"),
+      ),
+      style: const TextStyle(fontSize: 20),
+      autovalidateMode: AutovalidateMode.onUserInteraction,
+      validator: (value) => _parseFloatValidator(value, min: 0),
+      onChanged: _boxValueChanged,
+    );
+  }
+
+  Widget _getPartyMembersField() {
+    return TextFormField(
+      key: _partyMembersKey,
+      controller: _partyMembersController,
+      inputFormatters: [
+        _formatter,
+      ],
+      decoration: const InputDecoration(
+        labelText: "Number of members in party",
+      ),
+      style: const TextStyle(fontSize: 20),
+      autovalidateMode: AutovalidateMode.onUserInteraction,
+      validator: (value) => _parseIntValidator(value, min: 1),
+      onChanged: _partyMembersChanged,
+    );
+  }
+
+  Widget _getFeeField() {
+    return TextFormField(
+      key: _feeKey,
+      controller: _feeController,
+      decoration: const InputDecoration(
+        labelText: "Tax percentage / payout fee amount per transaction (optional)",
+        helperText: "Leave blank if not applicable",
+      ),
+      style: const TextStyle(fontSize: 20),
+      autovalidateMode: AutovalidateMode.onUserInteraction,
+      onChanged: _feeChanged,
+      validator: (value) => _parseFloatValidator(value, min: 0, max: 100, allowEmpty: true),
+    );
+  }
+
+  Widget _getPayoutField() {
+    return TextFormField(
+      controller: TextEditingController(text: _value.toStringAsFixed(0)),
+      textAlign: TextAlign.end,
+      readOnly: true,
+      textAlignVertical: TextAlignVertical.bottom,
+      inputFormatters: [
+        _formatter,
+      ],
+      decoration: InputDecoration(
+        isDense: true,
+        contentPadding: EdgeInsets.zero,
+        border: InputBorder.none,
+        suffix: Text("aUEC", style: Theme.of(context).textTheme.bodySmall),
+        prefix: Text(
+          "Each party member should receive ",
+          style: Theme.of(context).textTheme.titleSmall,
+        ),
+      ),
+      style: Theme.of(context).textTheme.displaySmall?.copyWith(color: Colors.red),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        // title
-        Text("Party Funds Disperser", style: Theme.of(context).textTheme.headlineMedium),
+    return FormFactorBuilder(
+      builder: (context, _, screenType) {
+        bool preferVertical = screenType == ScreenType.handset;
 
-        const SizedBox(
-          height: 4,
-        ),
-
-        // description
-        Text(
-          "This tool will help you to calculate how much money each party member should receive after a hunt.",
-          style: Theme.of(context).textTheme.bodySmall,
-        ),
-
-        // divider
-        const Divider(),
-
-        // form
-        Form(
-          key: _formKey,
+        return SingleChildScrollView(
+          physics: const ClampingScrollPhysics(),
           child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // form - box quantity and box value with min value and validator
-              Row(
-                children: [
-                  Expanded(
-                    child: TextFormField(
-                      key: _boxQuantityKey,
-                      controller: _boxQuantityController,
-                      decoration: const InputDecoration(
-                        labelText: "Number of boxes",
-                        hintText: "120",
-                      ),
-                      inputFormatters: [
-                        _formatter,
-                      ],
-                      style: const TextStyle(fontSize: 20),
-                      autovalidateMode: AutovalidateMode.onUserInteraction,
-                      validator: (value) => _parseIntValidator(value, min: 1),
-                      onChanged: _boxQuantityChanged,
-                    ),
-                  ),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: TextFormField(
-                      key: _boxValueKey,
-                      controller: _boxValueController,
-                      inputFormatters: [
-                        _formatter,
-                      ],
-                      decoration: const InputDecoration(
-                        labelText: "Box Value",
-                        hintText: "20000",
-                        suffix: Text("aUEC"),
-                      ),
-                      style: const TextStyle(fontSize: 20),
-                      autovalidateMode: AutovalidateMode.onUserInteraction,
-                      validator: (value) => _parseFloatValidator(value, min: 0),
-                      onChanged: _boxValueChanged,
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 16),
+              // title
+              Text("Party Funds Disperser", style: Theme.of(context).textTheme.headlineMedium),
 
-              // form - number of party members
-              Row(
-                children: [
-                  Expanded(
-                    child: TextFormField(
-                      key: _partyMembersKey,
-                      controller: _partyMembersController,
-                      inputFormatters: [
-                        _formatter,
-                      ],
-                      decoration: const InputDecoration(
-                        labelText: "Number of members in party",
-                      ),
-                      style: const TextStyle(fontSize: 20),
-                      autovalidateMode: AutovalidateMode.onUserInteraction,
-                      validator: (value) => _parseIntValidator(value, min: 1),
-                      onChanged: _partyMembersChanged,
-                    ),
-                  ),
-                  const Spacer(),
-                ],
+              const SizedBox(
+                height: 4,
               ),
-              const SizedBox(height: 16),
 
-              // form - optional tax percentage / payout fee amount
-              Row(
-                children: [
-                  Expanded(
-                    child: TextFormField(
-                        key: _feeKey,
-                        controller: _feeController,
-                        decoration: const InputDecoration(
-                          labelText: "Tax percentage / payout fee amount per transaction (optional)",
-                          helperText: "Leave blank if not applicable",
+              // description
+              Text(
+                "This tool will help you to calculate how much money each party member should receive after a hunt.",
+                style: Theme.of(context).textTheme.bodySmall,
+              ),
+
+              // divider
+              const Divider(),
+
+              // form
+              Form(
+                key: _formKey,
+                child: Column(
+                  children: [
+                    // form - box quantity and box value with min value and validator
+                    preferVertical
+                        ? Column(
+                            children: [
+                              _getBoxQuantityField(),
+                              const SizedBox(height: 16),
+                              _getBoxValueField(),
+                            ],
+                          )
+                        : Row(
+                            children: [
+                              Expanded(
+                                child: _getBoxQuantityField(),
+                              ),
+                              const SizedBox(width: 16),
+                              Expanded(
+                                child: _getBoxValueField(),
+                              ),
+                            ],
+                          ),
+                    const SizedBox(height: 16),
+
+                    // form - number of party members
+                    preferVertical
+                        ? Column(
+                            children: [
+                              _getPartyMembersField(),
+                            ],
+                          )
+                        : Row(
+                            children: [
+                              Expanded(
+                                child: _getPartyMembersField(),
+                              ),
+                              const Spacer(),
+                            ],
+                          ),
+                    const SizedBox(height: 16),
+
+                    // form - optional tax percentage / payout fee amount
+                    preferVertical
+                        ? Column(
+                            children: [
+                              _getFeeField(),
+                            ],
+                          )
+                        : Row(
+                            children: [
+                              Expanded(child: _getFeeField()),
+                              const Spacer(),
+                            ],
+                          ),
+                    const SizedBox(height: 16),
+                  ],
+                ),
+              ),
+
+              // divider
+              const Divider(
+                color: Colors.black26,
+              ),
+              const SizedBox(
+                height: 16,
+              ),
+
+              // calculation value
+              preferVertical
+                  ? Column(
+                      children: [
+                        _getPayoutField(),
+                      ],
+                    )
+                  : Row(
+                      children: [
+                        Expanded(
+                          child: _getPayoutField(),
                         ),
-                        style: const TextStyle(fontSize: 20),
-                        autovalidateMode: AutovalidateMode.onUserInteraction,
-                        onChanged: _feeChanged,
-                        validator: (value) => _parseFloatValidator(value, min: 0, max: 100, allowEmpty: true)),
-                  ),
-                  const Spacer(),
-                ],
+                        const Spacer(),
+                      ],
+                    ),
+
+              const SizedBox(
+                height: 16,
               ),
-              const SizedBox(height: 16),
+              const Divider(color: Colors.black26),
             ],
           ),
-        ),
-
-        // divider
-        const Divider(
-          color: Colors.black26,
-        ),
-        const SizedBox(
-          height: 16,
-        ),
-
-        // calculation value
-        Row(
-          children: [
-            Expanded(
-              child: TextFormField(
-                controller: TextEditingController(text: _value.toStringAsFixed(0)),
-                textAlign: TextAlign.end,
-                readOnly: true,
-                textAlignVertical: TextAlignVertical.bottom,
-                inputFormatters: [
-                  _formatter,
-                ],
-                decoration: InputDecoration(
-                  isDense: true,
-                  contentPadding: EdgeInsets.zero,
-                  border: InputBorder.none,
-                  suffix: Text("aUEC", style: Theme.of(context).textTheme.bodySmall),
-                  prefix: Text(
-                    "Each party member should receive ",
-                    style: Theme.of(context).textTheme.titleSmall,
-                  ),
-                ),
-                style: Theme.of(context).textTheme.displaySmall?.copyWith(color: Colors.red),
-              ),
-            ),
-            const Spacer(),
-          ],
-        ),
-
-        const SizedBox(
-          height: 16,
-        ),
-        const Divider(color: Colors.black26),
-      ],
+        );
+      },
     );
   }
 }
