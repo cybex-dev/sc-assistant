@@ -301,7 +301,7 @@ class _ContentState extends State<_Content> {
         isDense: true,
         contentPadding: EdgeInsets.zero,
         border: InputBorder.none,
-        suffix: Text("aUEC", style: Theme.of(context).textTheme.bodySmall),
+        suffix: const Text("aUEC"),
         prefix: Text(
           "Each party member should receive ",
           style: Theme.of(context).textTheme.titleSmall,
