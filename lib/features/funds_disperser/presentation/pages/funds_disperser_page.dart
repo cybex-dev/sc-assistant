@@ -67,7 +67,7 @@ class _Page extends StatelessWidget {
 }
 
 class _BackgroundImage extends StatelessWidget {
-  const _BackgroundImage({Key? key}): super(key: key);
+  const _BackgroundImage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -81,7 +81,7 @@ class _BackgroundImage extends StatelessWidget {
 }
 
 class _Content extends StatefulWidget {
-  const _Content({Key? key}): super(key: key);
+  const _Content({Key? key}) : super(key: key);
 
   @override
   State<_Content> createState() => _ContentState();
@@ -301,10 +301,10 @@ class _ContentState extends State<_Content> {
         isDense: true,
         contentPadding: EdgeInsets.zero,
         border: InputBorder.none,
-        suffix: const Text("aUEC"),
+        suffix: Text("aUEC", style: Theme.of(context).textTheme.bodySmall,),
         prefix: Text(
-          "Each party member should receive ",
-          style: Theme.of(context).textTheme.titleSmall,
+          "Payout / member",
+          style: Theme.of(context).textTheme.titleMedium,
         ),
       ),
       style: Theme.of(context).textTheme.displaySmall?.copyWith(color: Colors.red),
@@ -318,7 +318,6 @@ class _ContentState extends State<_Content> {
         bool preferVertical = screenType == ScreenType.handset;
 
         return SingleChildScrollView(
-          physics: const ClampingScrollPhysics(),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -347,55 +346,55 @@ class _ContentState extends State<_Content> {
                     // form - box quantity and box value with min value and validator
                     preferVertical
                         ? Column(
-                            children: [
-                              _getBoxQuantityField(),
-                              const SizedBox(height: 16),
-                              _getBoxValueField(),
-                            ],
-                          )
+                      children: [
+                        _getBoxQuantityField(),
+                        const SizedBox(height: 16),
+                        _getBoxValueField(),
+                      ],
+                    )
                         : Row(
-                            children: [
-                              Expanded(
-                                child: _getBoxQuantityField(),
-                              ),
-                              const SizedBox(width: 16),
-                              Expanded(
-                                child: _getBoxValueField(),
-                              ),
-                            ],
-                          ),
+                      children: [
+                        Expanded(
+                          child: _getBoxQuantityField(),
+                        ),
+                        const SizedBox(width: 16),
+                        Expanded(
+                          child: _getBoxValueField(),
+                        ),
+                      ],
+                    ),
                     const SizedBox(height: 16),
 
                     // form - number of party members
                     preferVertical
                         ? Column(
-                            children: [
-                              _getPartyMembersField(),
-                            ],
-                          )
+                      children: [
+                        _getPartyMembersField(),
+                      ],
+                    )
                         : Row(
-                            children: [
-                              Expanded(
-                                child: _getPartyMembersField(),
-                              ),
-                              const Spacer(),
-                            ],
-                          ),
+                      children: [
+                        Expanded(
+                          child: _getPartyMembersField(),
+                        ),
+                        const Spacer(),
+                      ],
+                    ),
                     const SizedBox(height: 16),
 
                     // form - optional tax percentage / payout fee amount
                     preferVertical
                         ? Column(
-                            children: [
-                              _getFeeField(),
-                            ],
-                          )
+                      children: [
+                        _getFeeField(),
+                      ],
+                    )
                         : Row(
-                            children: [
-                              Expanded(child: _getFeeField()),
-                              const Spacer(),
-                            ],
-                          ),
+                      children: [
+                        Expanded(child: _getFeeField()),
+                        const Spacer(),
+                      ],
+                    ),
                     const SizedBox(height: 16),
                   ],
                 ),
@@ -412,18 +411,18 @@ class _ContentState extends State<_Content> {
               // calculation value
               preferVertical
                   ? Column(
-                      children: [
-                        _getPayoutField(),
-                      ],
-                    )
+                children: [
+                  _getPayoutField(),
+                ],
+              )
                   : Row(
-                      children: [
-                        Expanded(
-                          child: _getPayoutField(),
-                        ),
-                        const Spacer(),
-                      ],
-                    ),
+                children: [
+                  Expanded(
+                    child: _getPayoutField(),
+                  ),
+                  const Spacer(),
+                ],
+              ),
 
               const SizedBox(
                 height: 16,
