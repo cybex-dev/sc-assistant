@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:sc_client/core/widgets/sca_drawer.dart';
 import 'package:sc_client/features/funds_disperser/presentation/pages/funds_disperser_page.dart';
 
@@ -23,17 +24,53 @@ class SCAScaffold extends StatelessWidget {
         title: title,
       ),
       drawer: SCADrawer(
-        title: Text(title, style: Theme.of(context).textTheme.bodyLarge),
+        title: Text("SC Assistant", style: Theme.of(context).textTheme.bodyLarge),
         items: [
+          const ListTile(
+            title: Text("Party Creator"),
+            // subtitle: Text("Create a new party"),
+            subtitle: Text("Coming Soon"),
+            enabled: false,
+          ),
+          const ListTile(
+            title: Text("Mission Planner"),
+            // subtitle: Text("Invite friends to your mission"),
+            subtitle: Text("Coming Soon"),
+            enabled: false,
+          ),
           ListTile(
-            title: const Text("Funds dispersion"),
+            title: const Text("Party Payouts"),
             onTap: () {
-              context.goNamed(FundsDisperserPage.name);
+              Navigator.of(context).pop();
+              context.go(FundsDisperserPage.name);
             },
           ),
+          const Spacer(),
+          const _VersionBuilder(),
         ],
       ),
       body: body,
+    );
+  }
+}
+
+class _VersionBuilder extends StatelessWidget {
+  const _VersionBuilder({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder<PackageInfo?>(
+      future: PackageInfo.fromPlatform(),
+      builder: (context, snapshot) {
+        if (snapshot.hasData) {
+          PackageInfo packageInfo = snapshot.data!;
+          return Column(
+            children: [Text("SC Assistant", style: Theme.of(context).textTheme.bodyLarge), Text("Version ${packageInfo.version}")],
+          );
+        } else {
+          return const SizedBox.shrink();
+        }
+      },
     );
   }
 }

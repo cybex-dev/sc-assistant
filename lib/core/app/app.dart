@@ -20,7 +20,9 @@ class _App extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp.router(
+      title: 'SC Assistant',
       theme: ThemeData(
+        useMaterial3: true,
         primarySwatch: createMaterialColor(brandDarkBlueColor),
         dividerTheme: const DividerThemeData(
           thickness: 2,

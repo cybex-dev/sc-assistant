@@ -16,6 +16,7 @@ dependencies:
   go_router: ^9.0.0
   intl: ^0.18.1
   currency_text_input_formatter: ^2.1.10
+  package_info_plus: ^4.0.2
 
 dev_dependencies:
   flutter_test:
