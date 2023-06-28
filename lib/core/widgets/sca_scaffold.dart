@@ -57,8 +57,6 @@ class SCAScaffold extends StatelessWidget {
               context.go(PrisonTimerPage.name);
             },
           ),
-          const Spacer(),
-          const _VersionBuilder(),
         ],
         footer: const Padding(
           padding: EdgeInsets.all(8.0),
