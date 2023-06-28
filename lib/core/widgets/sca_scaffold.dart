@@ -104,8 +104,12 @@ class _FooterBuilder extends StatelessWidget {
     return Column(
       children: [
         TextButton(
-          onPressed: () => openLinkOrFail(context, github),
-          child: const Text("Suggestion? Bug? Click here!"),
+          onPressed: () => openLinkOrFail(context, githubFeature),
+          child: const Text("Suggestion? Click here!"),
+        ),
+        TextButton(
+          onPressed: () => openLinkOrFail(context, githubIssue),
+          child: const Text("Bug? Issue? Click here!"),
         ),
         const SizedBox(height: 8),
         Row(
@@ -114,7 +118,7 @@ class _FooterBuilder extends StatelessWidget {
               child: _VersionBuilder(),
             ),
             IconButton(
-              onPressed: () => openLinkOrFail(context, githubIssues),
+              onPressed: () => openLinkOrFail(context, github),
               icon: Image.asset(
                 "assets/images/github.png",
                 height: 24.0,
