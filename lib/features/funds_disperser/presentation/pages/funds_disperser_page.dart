@@ -41,16 +41,17 @@ class FundsDisperserPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SCAScaffold(
-        title: "Funds disperser",
-        body: Stack(
-          children: [
-            const _BackgroundImage(),
-            Padding(
-              padding: const EdgeInsets.all(4.0).copyWith(top: 16.0),
-              child: _Page(),
-            ),
-          ],
-        ));
+      title: "Funds disperser",
+      body: Stack(
+        children: [
+          const _BackgroundImage(),
+          Padding(
+            padding: const EdgeInsets.all(4.0).copyWith(top: 16.0),
+            child: _Page(),
+          ),
+        ],
+      ),
+    );
   }
 }
 
@@ -346,55 +347,55 @@ class _ContentState extends State<_Content> {
                     // form - box quantity and box value with min value and validator
                     preferVertical
                         ? Column(
-                      children: [
-                        _getBoxQuantityField(),
-                        const SizedBox(height: 16),
-                        _getBoxValueField(),
-                      ],
-                    )
+                            children: [
+                              _getBoxQuantityField(),
+                              const SizedBox(height: 16),
+                              _getBoxValueField(),
+                            ],
+                          )
                         : Row(
-                      children: [
-                        Expanded(
-                          child: _getBoxQuantityField(),
-                        ),
-                        const SizedBox(width: 16),
-                        Expanded(
-                          child: _getBoxValueField(),
-                        ),
-                      ],
-                    ),
+                            children: [
+                              Expanded(
+                                child: _getBoxQuantityField(),
+                              ),
+                              const SizedBox(width: 16),
+                              Expanded(
+                                child: _getBoxValueField(),
+                              ),
+                            ],
+                          ),
                     const SizedBox(height: 16),
 
                     // form - number of party members
                     preferVertical
                         ? Column(
-                      children: [
-                        _getPartyMembersField(),
-                      ],
-                    )
+                            children: [
+                              _getPartyMembersField(),
+                            ],
+                          )
                         : Row(
-                      children: [
-                        Expanded(
-                          child: _getPartyMembersField(),
-                        ),
-                        const Spacer(),
-                      ],
-                    ),
+                            children: [
+                              Expanded(
+                                child: _getPartyMembersField(),
+                              ),
+                              const Spacer(),
+                            ],
+                          ),
                     const SizedBox(height: 16),
 
                     // form - optional tax percentage / payout fee amount
                     preferVertical
                         ? Column(
-                      children: [
-                        _getFeeField(),
-                      ],
-                    )
+                            children: [
+                              _getFeeField(),
+                            ],
+                          )
                         : Row(
-                      children: [
-                        Expanded(child: _getFeeField()),
-                        const Spacer(),
-                      ],
-                    ),
+                            children: [
+                              Expanded(child: _getFeeField()),
+                              const Spacer(),
+                            ],
+                          ),
                     const SizedBox(height: 16),
                   ],
                 ),
@@ -411,18 +412,18 @@ class _ContentState extends State<_Content> {
               // calculation value
               preferVertical
                   ? Column(
-                children: [
-                  _getPayoutField(),
-                ],
-              )
+                      children: [
+                        _getPayoutField(),
+                      ],
+                    )
                   : Row(
-                children: [
-                  Expanded(
-                    child: _getPayoutField(),
-                  ),
-                  const Spacer(),
-                ],
-              ),
+                      children: [
+                        Expanded(
+                          child: _getPayoutField(),
+                        ),
+                        const Spacer(),
+                      ],
+                    ),
 
               const SizedBox(
                 height: 16,
