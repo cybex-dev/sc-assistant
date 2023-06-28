@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:sc_client/core/widgets/sca_drawer.dart';
 import 'package:sc_client/features/funds_disperser/presentation/pages/funds_disperser_page.dart';
+import 'package:sc_client/features/prison_timer/presentation/pages/prison_timer_page.dart';
 
 import 'sca_appbar.dart';
 
@@ -43,6 +44,14 @@ class SCAScaffold extends StatelessWidget {
             onTap: () {
               Navigator.of(context).pop();
               context.go(FundsDisperserPage.name);
+            },
+          ),
+          ListTile(
+            title: const Text("Prison Timer"),
+            trailing: const Icon(Icons.whatshot),
+            onTap: () {
+              Navigator.of(context).pop();
+              context.go(PrisonTimerPage.name);
             },
           ),
           const Spacer(),
