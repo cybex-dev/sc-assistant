@@ -11,6 +11,7 @@ class SCADrawer extends StatelessWidget {
   Widget build(BuildContext context) {
     return Drawer(
       child: Column(
+        mainAxisSize: MainAxisSize.max,
         children: [
           DrawerHeader(
             child: title,

@@ -2,7 +2,7 @@ name: sc_client
 description: Set of tools helping a spaceman thrive in Star Citizen
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 
-version: 1.0.1+2
+version: 1.1.0+3
 
 environment:
   sdk: '>=2.19.6 <3.0.0'
@@ -17,6 +17,8 @@ dependencies:
   intl: ^0.18.1
   currency_text_input_formatter: ^2.1.10
   package_info_plus: ^4.0.2
+  google_fonts: ^3.0.1
+  url_launcher: ^6.1.11
 
 dev_dependencies:
   flutter_test:
@@ -26,3 +28,5 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+  assets:
+    - assets/images/

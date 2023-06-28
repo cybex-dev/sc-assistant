@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 import '../const/colors.dart';
 import '../router/sc_router.dart';
@@ -25,6 +26,7 @@ class _App extends StatelessWidget {
         dividerTheme: const DividerThemeData(
           thickness: 2,
         ),
+        textTheme: GoogleFonts.robotoTextTheme(Theme.of(context).textTheme)
       ),
       routerConfig: router,
     );
