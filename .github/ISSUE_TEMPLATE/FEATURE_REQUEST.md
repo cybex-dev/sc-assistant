@@ -1,6 +1,6 @@
 ---
 name: '🚀 Feature request'
-about: Suggest an idea for improving Wagtail
+about: Suggest an idea/concept/feature to enhance the project
 title: ''
 labels: 'type:Enhancement'
 assignees: ''
@@ -10,7 +10,6 @@ assignees: ''
 
 <!--
   Provide a clear and concise description of what the problem is.
-  For example, "I'm always frustrated when..."
 -->
 
 (Write your answer here.)
