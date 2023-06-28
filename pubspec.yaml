@@ -2,7 +2,7 @@ name: sc_client
 description: Set of tools helping a spaceman thrive in Star Citizen
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 
-version: 1.0.0+1
+version: 1.0.1+2
 
 environment:
   sdk: '>=2.19.6 <3.0.0'
