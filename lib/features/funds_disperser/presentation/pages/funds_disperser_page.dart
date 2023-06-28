@@ -23,7 +23,7 @@ class FundsDisperserPageArgs {
 }
 
 class FundsDisperserPage extends StatelessWidget {
-  static const String name = "/party-payouts";
+  static const String name = "/tools/party-payouts";
 
   static GoRoute goRoute({FundsDisperserPageArgs arguments = const FundsDisperserPageArgs(), String? title}) =>
       GoRoute(name: title, path: name, builder: (context, state) => FundsDisperserPage(arguments: arguments));
