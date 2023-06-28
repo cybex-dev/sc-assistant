@@ -17,6 +17,7 @@ dependencies:
   intl: ^0.18.1
   currency_text_input_formatter: ^2.1.10
   package_info_plus: ^4.0.2
+  url_launcher: ^6.1.11
 
 dev_dependencies:
   flutter_test:
@@ -26,3 +27,5 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+  assets:
+    - assets/images/
