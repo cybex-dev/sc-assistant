@@ -94,10 +94,12 @@ class _ContentState extends State<_Content> {
   late TextEditingController _boxValueController;
   late TextEditingController _partyMembersController;
   late TextEditingController _feeController;
+  late TextEditingController _expensesController;
   final _boxQuantityKey = GlobalKey<FormFieldState<String>>();
   final _boxValueKey = GlobalKey<FormFieldState<String>>();
   final _partyMembersKey = GlobalKey<FormFieldState<String>>();
   final _feeKey = GlobalKey<FormFieldState<String>>();
+  final _expensesKey = GlobalKey<FormFieldState<String>>();
 
   final CurrencyTextInputFormatter _formatter = CurrencyTextInputFormatter(
     decimalDigits: 0,
@@ -109,6 +111,7 @@ class _ContentState extends State<_Content> {
   double _boxValue = 20000;
   int _partyMembers = 2;
   double? _feePercentage = 0.5;
+  double? _expensesAmount = 0.0;
 
   double _value = 0;
 
@@ -147,8 +150,22 @@ class _ContentState extends State<_Content> {
     return null;
   }
 
-  double _calculatePayout(int boxCount, double boxValue, int partyMembers, double? fee) {
-    return boxCount * boxValue * (1 - ((fee ?? 0) / 100)) / partyMembers;
+  double _calculatePayout(int boxCount, double boxValue, int partyMembers, double? fee, double? expenses) {
+    double gross = boxCount * boxValue;
+
+    // if expenses are provided, subtract them from the gross
+    if (expenses != null) {
+      gross -= expenses;
+    }
+
+    // if fee is provided, remove fee rate amount
+    if (fee != null) {
+      double feeMultiplier = 1 - ((fee ?? 0) / 100);
+      gross *= feeMultiplier;
+    }
+
+    // divide by party members
+    return gross / partyMembers;
   }
 
   void _updateValue(double newValue) {
@@ -166,7 +183,7 @@ class _ContentState extends State<_Content> {
       if (value.isEmpty) {
         _value = 0;
       } else {
-        _updateValue(_calculatePayout(_boxQuantity, _boxValue, _partyMembers, _feePercentage));
+        _updateValue(_calculatePayout(_boxQuantity, _boxValue, _partyMembers, _feePercentage, _expensesAmount));
       }
     });
   }
@@ -180,7 +197,7 @@ class _ContentState extends State<_Content> {
       if (value.isEmpty) {
         _value = 0;
       } else {
-        _updateValue(_calculatePayout(_boxQuantity, _boxValue, _partyMembers, _feePercentage));
+        _updateValue(_calculatePayout(_boxQuantity, _boxValue, _partyMembers, _feePercentage, _expensesAmount));
       }
     });
   }
@@ -194,7 +211,7 @@ class _ContentState extends State<_Content> {
       if (value.isEmpty) {
         _value = 0;
       } else {
-        _updateValue(_calculatePayout(_boxQuantity, _boxValue, _partyMembers, _feePercentage));
+        _updateValue(_calculatePayout(_boxQuantity, _boxValue, _partyMembers, _feePercentage, _expensesAmount));
       }
     });
   }
@@ -205,7 +222,17 @@ class _ContentState extends State<_Content> {
     }
     setState(() {
       _feePercentage = double.tryParse(value.replaceAll(",", ""));
-      _updateValue(_calculatePayout(_boxQuantity, _boxValue, _partyMembers, _feePercentage));
+      _updateValue(_calculatePayout(_boxQuantity, _boxValue, _partyMembers, _feePercentage, _expensesAmount));
+    });
+  }
+
+  void _expensesChanged(String value) {
+    if (!(_expensesKey.currentState?.validate() ?? false)) {
+      return;
+    }
+    setState(() {
+      _expensesAmount = double.tryParse(value.replaceAll(",", ""));
+      _updateValue(_calculatePayout(_boxQuantity, _boxValue, _partyMembers, _feePercentage, _expensesAmount));
     });
   }
 
@@ -217,7 +244,8 @@ class _ContentState extends State<_Content> {
     _boxValueController = TextEditingController(text: _formatter.format(_boxValue.toString()));
     _partyMembersController = TextEditingController(text: _formatter.format(_partyMembers.toString()));
     _feeController = TextEditingController(text: _formatter.format(_feePercentage?.toString() ?? "0.5"));
-    _value = _calculatePayout(_boxQuantity, _boxValue, _partyMembers, _feePercentage);
+    _expensesController = TextEditingController(text: _formatter.format(_expensesAmount?.toString() ?? "0"));
+    _value = _calculatePayout(_boxQuantity, _boxValue, _partyMembers, _feePercentage, _expensesAmount);
   }
 
   Widget _getBoxQuantityField() {
@@ -286,6 +314,21 @@ class _ContentState extends State<_Content> {
       autovalidateMode: AutovalidateMode.onUserInteraction,
       onChanged: _feeChanged,
       validator: (value) => _parseFloatValidator(value, min: 0, max: 100, allowEmpty: true),
+    );
+  }
+
+  Widget _getExpensesField() {
+    return TextFormField(
+      key: _expensesKey,
+      controller: _expensesController,
+      decoration: const InputDecoration(
+        labelText: "Total Expenses for trip (optional)",
+        helperText: "Leave blank if not applicable",
+      ),
+      style: const TextStyle(fontSize: 20),
+      autovalidateMode: AutovalidateMode.onUserInteraction,
+      onChanged: _expensesChanged,
+      validator: (value) => _parseFloatValidator(value, min: 0, allowEmpty: true),
     );
   }
 
@@ -397,17 +440,38 @@ class _ContentState extends State<_Content> {
                             ],
                           ),
                     const SizedBox(height: 16),
+
+                    const Divider(color: Colors.black26),
+
+                    // form - optional expenses
+                    const SizedBox(height: 16),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        Text("Expenses", style: Theme.of(context).textTheme.titleLarge),
+                      ],
+                    ),
+
+                    preferVertical
+                        ? Column(
+                            children: [
+                              _getExpensesField(),
+                            ],
+                          )
+                        : Row(
+                            children: [
+                              Expanded(child: _getExpensesField()),
+                              const Spacer(),
+                            ],
+                          ),
+                    const SizedBox(height: 16),
                   ],
                 ),
               ),
 
               // divider
-              const Divider(
-                color: Colors.black26,
-              ),
-              const SizedBox(
-                height: 16,
-              ),
+              const Divider(color: Colors.black26),
+              const SizedBox(height: 16),
 
               // calculation value
               preferVertical
@@ -425,9 +489,7 @@ class _ContentState extends State<_Content> {
                       ],
                     ),
 
-              const SizedBox(
-                height: 16,
-              ),
+              const SizedBox(height: 16),
               const Divider(color: Colors.black26),
             ],
           ),
