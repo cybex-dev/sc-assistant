@@ -160,7 +160,7 @@ class _ContentState extends State<_Content> {
 
     // if fee is provided, remove fee rate amount
     if (fee != null) {
-      double feeMultiplier = 1 - ((fee ?? 0) / 100);
+      double feeMultiplier = 1 - (fee / 100);
       gross *= feeMultiplier;
     }
 
