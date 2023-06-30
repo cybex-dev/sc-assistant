@@ -491,6 +491,20 @@ class _ContentState extends State<_Content> {
 
               const SizedBox(height: 16),
               const Divider(color: Colors.black26),
+              const SizedBox(height: 8),
+
+              // Calculation
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text("Calculation", style: Theme.of(context).textTheme.titleSmall),
+                  const SizedBox(height: 4),
+                  Text("Gross = Number of Boxes x Box Value", style: Theme.of(context).textTheme.bodySmall),
+                  Text("Net = Gross - Expenses", style: Theme.of(context).textTheme.bodySmall),
+                  Text("After Tax = Net x Tax Multiplier", style: Theme.of(context).textTheme.bodySmall),
+                  Text("Payout / member = After Tax / Number of Party Members", style: Theme.of(context).textTheme.bodySmall),
+                ],
+              ),
             ],
           ),
         );
