@@ -375,7 +375,7 @@ class _ContentState extends State<_Content> {
 
               // description
               Text(
-                "This tool will help you to calculate how much money each party member should receive after a hunt.",
+                "This tool will help you to calculate how much money each party member should receive after a hunt. For use in missions that contain dispensed boxes e.g. Jumptown",
                 style: Theme.of(context).textTheme.bodySmall,
               ),
 
