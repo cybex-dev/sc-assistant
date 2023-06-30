@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:package_info_plus/package_info_plus.dart';
-import 'package:sc_client/core/widgets/dialogs.dart';
 import 'package:sc_client/core/widgets/sca_drawer.dart';
 import 'package:sc_client/features/funds_disperser/presentation/pages/funds_disperser_page.dart';
 import 'package:sc_client/features/prison_timer/presentation/pages/prison_timer_page.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 import '../const/urls.dart';
+import '../utils/launch_utils.dart';
 import 'sca_appbar.dart';
 
 class SCAScaffold extends StatelessWidget {
@@ -70,34 +69,6 @@ class SCAScaffold extends StatelessWidget {
 
 class _FooterBuilder extends StatelessWidget {
   const _FooterBuilder({Key? key}): super(key: key);
-
-  void openLinkOrFail(BuildContext context, String link) {
-    final uri = Uri.parse(link);
-    canLaunchUrl(uri).then((value) => launchUrl(uri)).catchError((err) {
-      showPopup(
-        context: context,
-        title: "Error",
-        content: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text("Unfortunately, I could not open the link for you. Please visit:"),
-            InkWell(
-              onTap: () {
-                launchUrl(Uri.parse(github));
-              },
-              child: Text(
-                github,
-                style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                      color: Theme.of(context).colorScheme.primary,
-                    ),
-              ),
-            ),
-          ],
-        ),
-      );
-      return false;
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
