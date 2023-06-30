@@ -488,6 +488,7 @@ class _ContentState extends State<_Content> {
                         const Spacer(),
                       ],
                     ),
+              _PayoutMultiplier(value: _value),
 
               const SizedBox(height: 16),
               const Divider(color: Colors.black26),
@@ -512,3 +513,36 @@ class _ContentState extends State<_Content> {
     );
   }
 }
+
+class _PayoutMultiplier extends StatelessWidget {
+
+  final double value;
+  final CurrencyTextInputFormatter _formatter = CurrencyTextInputFormatter(
+    decimalDigits: 0,
+    symbol: "",
+    enableNegative: false,
+  );
+
+  _PayoutMultiplier({Key? key, required this.value}): super(key: key);
+
+  Widget _getMultiplier(BuildContext context, int index, double value) {
+    final amount = _formatter.format((value * index).toStringAsFixed(0));
+    return Text(
+      "x$index = $amount aUEC",
+      style: Theme.of(context).textTheme.bodySmall,
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final list = List.generate(5, (index) => index + 1);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const SizedBox(height: 4),
+        ...list.map((e) => _getMultiplier(context, e, value)),
+      ],
+    );
+  }
+}
+
