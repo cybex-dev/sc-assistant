@@ -1,3 +1,6 @@
+### 1.1.4
+* Add party payout multiplier (@XenoFlier)
+
 ### 1.1.3
 * Add expenses & calculation to party payouts
 
