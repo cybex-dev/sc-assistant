@@ -3,9 +3,9 @@ import 'package:flutter/cupertino.dart';
 import 'package:go_router/go_router.dart';
 import 'package:sc_client/core/utils/form_factor.dart';
 import 'package:sc_client/features/prison_timer/presentation/widgets/time_input.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 import '../../../../core/widgets/sca_scaffold.dart';
+import '../widgets/player_credits.dart';
 
 class PrisonTimerPageArgs {
   const PrisonTimerPageArgs();
@@ -167,17 +167,7 @@ class _ContentState extends State<_Content> {
                 style: Theme.of(context).textTheme.bodySmall,
               ),
 
-              Row(
-                children: [
-                  const Text("Inspired by:"),
-                  const SizedBox(width: 2),
-                  TextButton.icon(
-                    onPressed: () => launchUrl(Uri.parse("https://robertsspaceindustries.com/citizens/SavageRogue")),
-                    icon: const Icon(Icons.open_in_new),
-                    label: const Text("UberTrooper"),
-                  ),
-                ],
-              ),
+              const PlayerCredits.rsi(name: "UberTrooper", handle: "SavageRogue"),
 
               // divider
               const Divider(),
