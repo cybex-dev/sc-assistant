@@ -1,3 +1,8 @@
+### 1.1.5
+* Multi-value asset calculator (@XenoFlier)
+* Fix credits link (URI)
+* Change initial tax from `5%` to `0.5%`  
+
 ### 1.1.4
 * Add party payout multiplier (@XenoFlier)
 
