@@ -316,7 +316,7 @@ class _ContentState extends State<_Content> {
 
   void _addBox() {
     setState(() {
-      _assetList.add(Tuple(1, 10000 * (_assetList.length + 1)));
+      _assetList.add(const Tuple(1, 20000));
       _value = _calculatePayout(_assetList, _partyMembers, _feePercentage, _expensesAmount);
     });
   }
