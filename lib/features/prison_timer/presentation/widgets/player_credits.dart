@@ -16,7 +16,7 @@ class PlayerCredits extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     assert(name.isNotEmpty, "Name cannot be empty");
-    assert(Uri.tryParse(url) == null, "Url cannot be empty or invalid");
+    assert(Uri.tryParse(url) != null, "Url cannot be empty or invalid");
 
     final uri = Uri.parse(url);
 
