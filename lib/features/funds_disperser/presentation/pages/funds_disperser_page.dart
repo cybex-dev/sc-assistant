@@ -91,7 +91,6 @@ class _Content extends StatefulWidget {
 }
 
 class _ContentState extends State<_Content> {
-  final _formKey = GlobalKey<FormState>();
   late TextEditingController _partyMembersController;
   late TextEditingController _feeController;
   late TextEditingController _expensesController;
