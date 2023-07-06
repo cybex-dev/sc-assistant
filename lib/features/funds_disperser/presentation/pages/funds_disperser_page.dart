@@ -243,7 +243,7 @@ class _ContentState extends State<_Content> {
     _boxQuantityController = TextEditingController(text: _formatter.format(_boxQuantity.toString()));
     _boxValueController = TextEditingController(text: _formatter.format(_boxValue.toString()));
     _partyMembersController = TextEditingController(text: _formatter.format(_partyMembers.toString()));
-    _feeController = TextEditingController(text: _formatter.format(_feePercentage?.toString() ?? "0.5"));
+    _feeController = TextEditingController(text: _feePercentage?.toString() ?? "0.5");
     _expensesController = TextEditingController(text: _formatter.format(_expensesAmount?.toString() ?? "0"));
     _value = _calculatePayout(_boxQuantity, _boxValue, _partyMembers, _feePercentage, _expensesAmount);
   }
