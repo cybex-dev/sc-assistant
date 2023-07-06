@@ -1,7 +1,6 @@
 import 'package:currency_text_input_formatter/currency_text_input_formatter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import 'package:sc_client/core/utils/form_factor.dart';
 import 'package:sc_client/core/utils/list_utils.dart';
@@ -220,16 +219,13 @@ class _ContentState extends State<_Content> {
 
   void _onRemoved(int index, Tuple tuple) {
     setState(() {
-      print("removed $index tuple");
       _assetList.removeAt(index);
-      print(_assetList);
       _value = _calculatePayout(_assetList, _partyMembers, _feePercentage, _expensesAmount);
     });
   }
 
   void _onChanged(int index, Tuple tuple) {
     setState(() {
-      print("changed $index to $tuple");
       _assetList[index] = tuple;
       _value = _calculatePayout(_assetList, _partyMembers, _feePercentage, _expensesAmount);
     });
@@ -329,7 +325,6 @@ class _ContentState extends State<_Content> {
   Widget build(BuildContext context) {
     final items = _assetList.map((e) {
       final index = _assetList.indexOf(e);
-      print("index: $index tuple: $e");
       return _TupleEntry(
         last: index == _assetList.length,
         index: index,
