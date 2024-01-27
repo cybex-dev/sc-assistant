@@ -100,6 +100,7 @@ class _ContentState extends State<_Content> {
   final _feeKey = GlobalKey<FormFieldState<String>>();
   final _expensesKey = GlobalKey<FormFieldState<String>>();
   final List<Tuple> _assetList = [];
+  final List<Tuple> _expenseList = [];
 
   final CurrencyTextInputFormatter _formatter = CurrencyTextInputFormatter(
     decimalDigits: 0,
@@ -234,6 +235,22 @@ class _ContentState extends State<_Content> {
     });
   }
 
+  void _onExpenseRemoved(int index, Tuple tuple) {
+    setState(() {
+      _expenseList.removeAt(index);
+      _expensesAmount = _expenseList.map((e) => e.quantity * e.value).reduceOrDefault((value, element) => value + element, () => 0);
+      _value = _calculatePayout(_assetList, _partyMembers, _feePercentage, _expensesAmount);
+    });
+  }
+
+  void _onExpenseChanged(int index, Tuple tuple) {
+    setState(() {
+      _expenseList[index] = tuple;
+      _expensesAmount = _expenseList.map((e) => e.quantity * e.value).reduceOrDefault((value, element) => value + element, () => 0);
+      _value = _calculatePayout(_assetList, _partyMembers, _feePercentage, _expensesAmount);
+    });
+  }
+
   Widget _getPartyMembersField() {
     return TextFormField(
       key: _partyMembersKey,
@@ -266,20 +283,20 @@ class _ContentState extends State<_Content> {
     );
   }
 
-  Widget _getExpensesField() {
-    return TextFormField(
-      key: _expensesKey,
-      controller: _expensesController,
-      decoration: const InputDecoration(
-        labelText: "Total Expenses for trip (optional)",
-        helperText: "Leave blank if not applicable",
-      ),
-      style: const TextStyle(fontSize: 20),
-      autovalidateMode: AutovalidateMode.onUserInteraction,
-      onChanged: _expensesChanged,
-      validator: (value) => _parseFloatValidator(value, min: 0, allowEmpty: true),
-    );
-  }
+  // Widget _getExpensesField() {
+  //   return TextFormField(
+  //     key: _expensesKey,
+  //     controller: _expensesController,
+  //     decoration: const InputDecoration(
+  //       labelText: "Total Expenses for trip (optional)",
+  //       helperText: "Leave blank if not applicable",
+  //     ),
+  //     style: const TextStyle(fontSize: 20),
+  //     autovalidateMode: AutovalidateMode.onUserInteraction,
+  //     onChanged: _expensesChanged,
+  //     validator: (value) => _parseFloatValidator(value, min: 0, allowEmpty: true),
+  //   );
+  // }
 
   Widget _getPayoutField() {
     return TextFormField(
@@ -314,6 +331,14 @@ class _ContentState extends State<_Content> {
     });
   }
 
+  void _addExpenseBox() {
+    setState(() {
+      _expenseList.add(const Tuple(1, 1000, ""));
+      _expensesAmount = _expenseList.map((e) => e.quantity * e.value).reduceOrDefault((value, element) => value + element, () => 0);
+      _value = _calculatePayout(_assetList, _partyMembers, _feePercentage, _expensesAmount);
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final items = _assetList.map((e) {
@@ -325,6 +350,21 @@ class _ContentState extends State<_Content> {
         onChanged: _onChanged,
         onRemoved: _onRemoved,
         formatter: _formatter,
+      );
+    });
+
+    final expenseItems = _expenseList.map((e) {
+      final index = _expenseList.indexOf(e);
+      return _TupleEntry(
+        showQuantity: false,
+        last: index == _assetList.length,
+        index: index,
+        tuple: e,
+        onChanged: _onExpenseChanged,
+        onRemoved: _onExpenseRemoved,
+        formatter: _formatter,
+        boxNameLabel: "Name / Category",
+        boxValueLabel: "Amount",
       );
     });
 
@@ -368,7 +408,7 @@ class _ContentState extends State<_Content> {
                     onPressed: _addBox,
                   ),
 
-                  const SizedBox(height: 16),
+                  const SizedBox(height: 48),
 
                   // form - number of party members
                   preferVertical
@@ -385,7 +425,7 @@ class _ContentState extends State<_Content> {
                             const Spacer(),
                           ],
                         ),
-                  const SizedBox(height: 16),
+                  const SizedBox(height: 48),
 
                   // form - optional tax percentage / payout fee amount
                   preferVertical
@@ -400,33 +440,25 @@ class _ContentState extends State<_Content> {
                             const Spacer(),
                           ],
                         ),
-                  const SizedBox(height: 16),
-
-                  const Divider(color: Colors.black26),
+                  const SizedBox(height: 48),
 
                   // form - optional expenses
-                  const SizedBox(height: 16),
                   Text("Expenses", style: Theme.of(context).textTheme.titleLarge),
+                  ...expenseItems,
+                  const SizedBox(height: 8),
+                  ElevatedButton.icon(
+                    icon: const Icon(Icons.add),
+                    label: const Text("Add expense"),
+                    onPressed: _addExpenseBox,
+                  ),
 
-                  preferVertical
-                      ? Column(
-                          children: [
-                            _getExpensesField(),
-                          ],
-                        )
-                      : Row(
-                          children: [
-                            Expanded(child: _getExpensesField()),
-                            const Spacer(),
-                          ],
-                        ),
-                  const SizedBox(height: 16),
+                  const SizedBox(height: 32),
                 ],
               ),
 
               // divider
               const Divider(color: Colors.black26),
-              const SizedBox(height: 16),
+              const SizedBox(height: 48),
 
               // calculation value
               preferVertical
@@ -522,6 +554,7 @@ typedef OnTupleChanged = void Function(int index, Tuple tuple);
 typedef OnTupleRemoved = void Function(int index, Tuple tuple);
 
 class _TupleEntry extends StatefulWidget {
+  final bool showQuantity;
   final bool last;
   final int index;
   final CurrencyTextInputFormatter formatter;
@@ -529,14 +562,22 @@ class _TupleEntry extends StatefulWidget {
   final OnTupleRemoved onRemoved;
   final Tuple tuple;
 
+  final String? boxQuantityLabel;
+  final String? boxValueLabel;
+  final String? boxNameLabel;
+
   const _TupleEntry({
     Key? key,
     this.last = false,
+    this.showQuantity = true,
     required this.index,
     required this.tuple,
     required this.formatter,
     required this.onChanged,
     required this.onRemoved,
+    this.boxQuantityLabel,
+    this.boxValueLabel,
+    this.boxNameLabel,
   }) : super(key: key);
 
   @override
@@ -556,12 +597,22 @@ class _TupleEntryState extends State<_TupleEntry> {
   double _boxValue = 20000;
   String _boxLabel = "";
 
+  String? _overrideQuantityLabel;
+  String? _overrideValueLabel;
+  String? _overrideNameLabel;
+
+  bool _showQuantity = true;
+
   @override
   void initState() {
     super.initState();
+    _showQuantity = widget.showQuantity;
     _boxQuantity = widget.tuple.quantity;
     _boxValue = widget.tuple.value;
     _boxLabel = widget.tuple.label;
+    _overrideQuantityLabel = widget.boxQuantityLabel;
+    _overrideValueLabel = widget.boxValueLabel;
+    _overrideNameLabel = widget.boxNameLabel;
     _boxQuantityController = TextEditingController(text: widget.formatter.format(_boxQuantity.toString()));
     _boxValueController = TextEditingController(text: widget.formatter.format(_boxValue.toString()));
     _boxLabelController = TextEditingController(text: _boxLabel);
@@ -606,8 +657,8 @@ class _TupleEntryState extends State<_TupleEntry> {
     return TextFormField(
       key: _boxQuantityKey,
       controller: _boxQuantityController,
-      decoration: const InputDecoration(
-        labelText: "Number of boxes",
+      decoration: InputDecoration(
+        labelText: _overrideQuantityLabel ?? "Number of boxes",
         hintText: "120",
       ),
       inputFormatters: [
@@ -628,8 +679,8 @@ class _TupleEntryState extends State<_TupleEntry> {
       inputFormatters: [
         widget.formatter,
       ],
-      decoration: const InputDecoration(
-        labelText: "Box Value",
+      decoration: InputDecoration(
+        labelText: _overrideValueLabel ?? "Box Value",
         hintText: "20000",
         suffix: Text("aUEC"),
       ),
@@ -645,8 +696,8 @@ class _TupleEntryState extends State<_TupleEntry> {
     return TextFormField(
       key: _boxLabelKey,
       controller: _boxLabelController,
-      decoration: const InputDecoration(
-        labelText: "Commodity/Asset Name",
+      decoration: InputDecoration(
+        labelText: _overrideNameLabel ?? "Commodity/Asset Name",
         hintText: "",
       ),
       textInputAction: last ? TextInputAction.done : TextInputAction.next,
@@ -697,6 +748,7 @@ class _TupleEntryState extends State<_TupleEntry> {
       _boxQuantityController.selection = TextSelection.fromPosition(TextPosition(offset: _boxQuantityController.text.length));
       _boxValueController.selection = TextSelection.fromPosition(TextPosition(offset: _boxValueController.text.length));
       _boxLabelController.selection = TextSelection.fromPosition(TextPosition(offset: _boxLabelController.text.length));
+      _showQuantity = widget.showQuantity;
     }
   }
 
@@ -705,10 +757,11 @@ class _TupleEntryState extends State<_TupleEntry> {
     final width = MediaQuery.of(context).size.width;
     return Row(
       children: [
-        Container(
-          constraints: BoxConstraints.tightForFinite(width: max(width * 0.1, 100)),
-          child: _getBoxQuantityField(),
-        ),
+        if(_showQuantity)
+          Container(
+            constraints: BoxConstraints.tightForFinite(width: max(width * 0.1, 100)),
+            child: _getBoxQuantityField(),
+          ),
         const SizedBox(width: 16),
         Container(
           constraints: BoxConstraints.tightForFinite(width: max(width * 0.15, 200)),
