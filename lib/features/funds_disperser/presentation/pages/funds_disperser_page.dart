@@ -32,8 +32,8 @@ class FundsDisperserPage extends StatelessWidget {
   static GoRoute goRoute({FundsDisperserPageArgs arguments = const FundsDisperserPageArgs(), String? title}) =>
       GoRoute(name: title, path: name, builder: (context, state) => FundsDisperserPage(arguments: arguments));
 
-  static Route route({FundsDisperserPageArgs arguments = const FundsDisperserPageArgs(), String? title}) => CupertinoPageRoute(
-      builder: (_) => FundsDisperserPage(arguments: arguments), title: title, settings: RouteSettings(name: name, arguments: arguments));
+  static Route route({FundsDisperserPageArgs arguments = const FundsDisperserPageArgs(), String? title}) =>
+      CupertinoPageRoute(builder: (_) => FundsDisperserPage(arguments: arguments), title: title, settings: RouteSettings(name: name, arguments: arguments));
 
   static Page page({FundsDisperserPageArgs arguments = const FundsDisperserPageArgs(), String? title}) =>
       CupertinoPage(child: const FundsDisperserPage(arguments: FundsDisperserPageArgs()), title: title, name: name, arguments: arguments);
@@ -296,24 +296,14 @@ class _ContentState extends State<_Content> {
         border: InputBorder.none,
         suffix: Text(
           "aUEC",
-          style: Theme
-              .of(context)
-              .textTheme
-              .bodySmall,
+          style: Theme.of(context).textTheme.bodySmall,
         ),
         prefix: Text(
           "Payout / member",
-          style: Theme
-              .of(context)
-              .textTheme
-              .titleMedium,
+          style: Theme.of(context).textTheme.titleMedium,
         ),
       ),
-      style: Theme
-          .of(context)
-          .textTheme
-          .displaySmall
-          ?.copyWith(color: Colors.red),
+      style: Theme.of(context).textTheme.displaySmall?.copyWith(color: Colors.red),
     );
   }
 
@@ -348,10 +338,7 @@ class _ContentState extends State<_Content> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // title
-              Text("Party Funds Disperser", style: Theme
-                  .of(context)
-                  .textTheme
-                  .headlineMedium),
+              Text("Party Funds Disperser", style: Theme.of(context).textTheme.headlineMedium),
 
               const SizedBox(
                 height: 4,
@@ -360,10 +347,7 @@ class _ContentState extends State<_Content> {
               // description
               Text(
                 "This tool will help you to calculate how much money each party member should receive after a hunt. For use in missions that contain dispensed boxes e.g. Jumptown",
-                style: Theme
-                    .of(context)
-                    .textTheme
-                    .bodySmall,
+                style: Theme.of(context).textTheme.bodySmall,
               ),
 
               // divider
@@ -373,10 +357,7 @@ class _ContentState extends State<_Content> {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text("Assets List", style: Theme
-                      .of(context)
-                      .textTheme
-                      .titleLarge),
+                  Text("Assets List", style: Theme.of(context).textTheme.titleLarge),
 
                   // form - box quantity and box value with min value and validator
                   ...items,
@@ -392,56 +373,53 @@ class _ContentState extends State<_Content> {
                   // form - number of party members
                   preferVertical
                       ? Column(
-                    children: [
-                      _getPartyMembersField(),
-                    ],
-                  )
+                          children: [
+                            _getPartyMembersField(),
+                          ],
+                        )
                       : Row(
-                    children: [
-                      Expanded(
-                        child: _getPartyMembersField(),
-                      ),
-                      const Spacer(),
-                    ],
-                  ),
+                          children: [
+                            Expanded(
+                              child: _getPartyMembersField(),
+                            ),
+                            const Spacer(),
+                          ],
+                        ),
                   const SizedBox(height: 16),
 
                   // form - optional tax percentage / payout fee amount
                   preferVertical
                       ? Column(
-                    children: [
-                      _getFeeField(),
-                    ],
-                  )
+                          children: [
+                            _getFeeField(),
+                          ],
+                        )
                       : Row(
-                    children: [
-                      Expanded(child: _getFeeField()),
-                      const Spacer(),
-                    ],
-                  ),
+                          children: [
+                            Expanded(child: _getFeeField()),
+                            const Spacer(),
+                          ],
+                        ),
                   const SizedBox(height: 16),
 
                   const Divider(color: Colors.black26),
 
                   // form - optional expenses
                   const SizedBox(height: 16),
-                  Text("Expenses", style: Theme
-                      .of(context)
-                      .textTheme
-                      .titleLarge),
+                  Text("Expenses", style: Theme.of(context).textTheme.titleLarge),
 
                   preferVertical
                       ? Column(
-                    children: [
-                      _getExpensesField(),
-                    ],
-                  )
+                          children: [
+                            _getExpensesField(),
+                          ],
+                        )
                       : Row(
-                    children: [
-                      Expanded(child: _getExpensesField()),
-                      const Spacer(),
-                    ],
-                  ),
+                          children: [
+                            Expanded(child: _getExpensesField()),
+                            const Spacer(),
+                          ],
+                        ),
                   const SizedBox(height: 16),
                 ],
               ),
@@ -453,18 +431,18 @@ class _ContentState extends State<_Content> {
               // calculation value
               preferVertical
                   ? Column(
-                children: [
-                  _getPayoutField(),
-                ],
-              )
+                      children: [
+                        _getPayoutField(),
+                      ],
+                    )
                   : Row(
-                children: [
-                  Expanded(
-                    child: _getPayoutField(),
-                  ),
-                  const Spacer(),
-                ],
-              ),
+                      children: [
+                        Expanded(
+                          child: _getPayoutField(),
+                        ),
+                        const Spacer(),
+                      ],
+                    ),
               _PayoutMultiplier(value: _value),
 
               const SizedBox(height: 16),
@@ -475,27 +453,12 @@ class _ContentState extends State<_Content> {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text("Calculation", style: Theme
-                      .of(context)
-                      .textTheme
-                      .titleSmall),
+                  Text("Calculation", style: Theme.of(context).textTheme.titleSmall),
                   const SizedBox(height: 4),
-                  Text("Gross = Number of Boxes x Box Value", style: Theme
-                      .of(context)
-                      .textTheme
-                      .bodySmall),
-                  Text("Net = Gross - Expenses", style: Theme
-                      .of(context)
-                      .textTheme
-                      .bodySmall),
-                  Text("After Tax = Net x Tax Multiplier", style: Theme
-                      .of(context)
-                      .textTheme
-                      .bodySmall),
-                  Text("Payout / member = After Tax / Number of Party Members", style: Theme
-                      .of(context)
-                      .textTheme
-                      .bodySmall),
+                  Text("Gross = Number of Boxes x Box Value", style: Theme.of(context).textTheme.bodySmall),
+                  Text("Net = Gross - Expenses", style: Theme.of(context).textTheme.bodySmall),
+                  Text("After Tax = Net x Tax Multiplier", style: Theme.of(context).textTheme.bodySmall),
+                  Text("Payout / member = After Tax / Number of Party Members", style: Theme.of(context).textTheme.bodySmall),
                 ],
               ),
             ],
@@ -520,10 +483,7 @@ class _PayoutMultiplier extends StatelessWidget {
     final amount = _formatter.format((value * index).toStringAsFixed(0));
     return Text(
       "x$index = $amount aUEC",
-      style: Theme
-          .of(context)
-          .textTheme
-          .bodySmall,
+      style: Theme.of(context).textTheme.bodySmall,
     );
   }
 
@@ -546,6 +506,7 @@ class Tuple {
   final String label;
 
   const Tuple(this.quantity, this.value, this.label);
+
   const Tuple.empty()
       : quantity = 0,
         value = 0,
@@ -733,8 +694,7 @@ class _TupleEntryState extends State<_TupleEntry> {
       _boxQuantityController.text = widget.formatter.format(_boxQuantity.toString());
       _boxValueController.text = widget.formatter.format(_boxValue.toString());
       _boxLabelController.text = _boxLabel;
-      _boxQuantityController.selection =
-          TextSelection.fromPosition(TextPosition(offset: _boxQuantityController.text.length));
+      _boxQuantityController.selection = TextSelection.fromPosition(TextPosition(offset: _boxQuantityController.text.length));
       _boxValueController.selection = TextSelection.fromPosition(TextPosition(offset: _boxValueController.text.length));
       _boxLabelController.selection = TextSelection.fromPosition(TextPosition(offset: _boxLabelController.text.length));
     }
