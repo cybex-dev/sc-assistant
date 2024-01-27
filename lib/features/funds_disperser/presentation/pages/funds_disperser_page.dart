@@ -94,10 +94,10 @@ class _Content extends StatefulWidget {
 class _ContentState extends State<_Content> {
   late TextEditingController _partyMembersController;
   late TextEditingController _feeController;
-  late TextEditingController _expensesController;
+  // late TextEditingController _expensesController;
   final _partyMembersKey = GlobalKey<FormFieldState<String>>();
   final _feeKey = GlobalKey<FormFieldState<String>>();
-  final _expensesKey = GlobalKey<FormFieldState<String>>();
+  // final _expensesKey = GlobalKey<FormFieldState<String>>();
   final List<Tuple> _assetList = [];
   final List<Tuple> _expenseList = [];
 
@@ -196,15 +196,15 @@ class _ContentState extends State<_Content> {
     });
   }
 
-  void _expensesChanged(String value) {
-    if (!(_expensesKey.currentState?.validate() ?? false)) {
-      return;
-    }
-    setState(() {
-      _expensesAmount = double.tryParse(value.replaceAll(",", ""));
-      _updateValue(_calculatePayout(_assetList, _partyMembers, _feePercentage, _expensesAmount));
-    });
-  }
+  // void _expensesChanged(String value) {
+  //   if (!(_expensesKey.currentState?.validate() ?? false)) {
+  //     return;
+  //   }
+  //   setState(() {
+  //     _expensesAmount = double.tryParse(value.replaceAll(",", ""));
+  //     _updateValue(_calculatePayout(_assetList, _partyMembers, _feePercentage, _expensesAmount));
+  //   });
+  // }
 
   @override
   void initState() {
@@ -216,7 +216,7 @@ class _ContentState extends State<_Content> {
     }
     _partyMembersController = TextEditingController(text: _formatter.format(_partyMembers.toString()));
     _feeController = TextEditingController(text: _feePercentage?.toString() ?? "0.5");
-    _expensesController = TextEditingController(text: _formatter.format(_expensesAmount?.toString() ?? "0"));
+    // _expensesController = TextEditingController(text: _formatter.format(_expensesAmount?.toString() ?? "0"));
     _value = _calculatePayout(_assetList, _partyMembers, _feePercentage, _expensesAmount);
   }
 
@@ -574,6 +574,7 @@ class _TupleEntry extends StatefulWidget {
     required this.formatter,
     required this.onChanged,
     required this.onRemoved,
+    //ignore: unused_element
     this.boxQuantityLabel,
     this.boxValueLabel,
     this.boxNameLabel,
@@ -681,7 +682,7 @@ class _TupleEntryState extends State<_TupleEntry> {
       decoration: InputDecoration(
         labelText: _overrideValueLabel ?? "Box Value",
         hintText: "20000",
-        suffix: Text("aUEC"),
+        suffix: const Text("aUEC"),
       ),
       textInputAction: TextInputAction.next,
       style: const TextStyle(fontSize: 20),
