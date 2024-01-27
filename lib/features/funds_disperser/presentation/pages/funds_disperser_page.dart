@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:currency_text_input_formatter/currency_text_input_formatter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
@@ -209,7 +211,7 @@ class _ContentState extends State<_Content> {
     // TODO: implement initState
     super.initState();
     if (_assetList.isEmpty) {
-      _assetList.add(const Tuple(1, 20000));
+      _assetList.add(const Tuple(1, 20000, ""));
       _value = _calculatePayout(_assetList, _partyMembers, _feePercentage, _expensesAmount);
     }
     _partyMembersController = TextEditingController(text: _formatter.format(_partyMembers.toString()));
@@ -317,7 +319,7 @@ class _ContentState extends State<_Content> {
 
   void _addBox() {
     setState(() {
-      _assetList.add(const Tuple(1, 20000));
+      _assetList.add(const Tuple(1, 20000, ""));
       _value = _calculatePayout(_assetList, _partyMembers, _feePercentage, _expensesAmount);
     });
   }
@@ -541,12 +543,17 @@ class _PayoutMultiplier extends StatelessWidget {
 class Tuple {
   final int quantity;
   final double value;
+  final String label;
 
-  const Tuple(this.quantity, this.value);
+  const Tuple(this.quantity, this.value, this.label);
+  const Tuple.empty()
+      : quantity = 0,
+        value = 0,
+        label = "";
 
   @override
   String toString() {
-    return "Tuple(quantity: $quantity, value: $value)";
+    return "Tuple(quantity: $quantity, value: $value, label: $label)";
   }
 }
 
@@ -578,18 +585,25 @@ class _TupleEntry extends StatefulWidget {
 class _TupleEntryState extends State<_TupleEntry> {
   late TextEditingController _boxQuantityController;
   late TextEditingController _boxValueController;
+
+  late TextEditingController _boxLabelController;
   final _boxQuantityKey = GlobalKey<FormFieldState<String>>();
   final _boxValueKey = GlobalKey<FormFieldState<String>>();
+
+  final _boxLabelKey = GlobalKey<FormFieldState<String>>();
   int _boxQuantity = 1;
   double _boxValue = 20000;
+  String _boxLabel = "";
 
   @override
   void initState() {
     super.initState();
     _boxQuantity = widget.tuple.quantity;
     _boxValue = widget.tuple.value;
+    _boxLabel = widget.tuple.label;
     _boxQuantityController = TextEditingController(text: widget.formatter.format(_boxQuantity.toString()));
     _boxValueController = TextEditingController(text: widget.formatter.format(_boxValue.toString()));
+    _boxLabelController = TextEditingController(text: _boxLabel);
   }
 
   String? _parseIntValidator(String? value, {int? min, int? max}) {
@@ -639,6 +653,7 @@ class _TupleEntryState extends State<_TupleEntry> {
         widget.formatter,
       ],
       style: const TextStyle(fontSize: 20),
+      textInputAction: TextInputAction.next,
       autovalidateMode: AutovalidateMode.onUserInteraction,
       validator: (value) => _parseIntValidator(value, min: 0),
       onChanged: _boxQuantityChanged,
@@ -657,10 +672,30 @@ class _TupleEntryState extends State<_TupleEntry> {
         hintText: "20000",
         suffix: Text("aUEC"),
       ),
+      textInputAction: TextInputAction.next,
       style: const TextStyle(fontSize: 20),
       autovalidateMode: AutovalidateMode.onUserInteraction,
       validator: (value) => _parseFloatValidator(value, min: 0),
       onChanged: _boxValueChanged,
+    );
+  }
+
+  Widget _getBoxLabelField({bool last = false}) {
+    return TextFormField(
+      key: _boxLabelKey,
+      controller: _boxLabelController,
+      decoration: const InputDecoration(
+        labelText: "Commodity/Asset Name",
+        hintText: "",
+      ),
+      textInputAction: last ? TextInputAction.done : TextInputAction.next,
+      style: const TextStyle(fontSize: 20),
+      autovalidateMode: AutovalidateMode.onUserInteraction,
+      onChanged: (value) {
+        setState(() {
+          _boxLabel = value;
+        });
+      },
     );
   }
 
@@ -675,7 +710,7 @@ class _TupleEntryState extends State<_TupleEntry> {
   }
 
   void _onChanged() {
-    widget.onChanged(widget.index, Tuple(_boxQuantity, _boxValue));
+    widget.onChanged(widget.index, Tuple(_boxQuantity, _boxValue, _boxLabel));
   }
 
   void _boxValueChanged(String value) {
@@ -694,29 +729,43 @@ class _TupleEntryState extends State<_TupleEntry> {
     if (widget.tuple != oldWidget.tuple) {
       _boxQuantity = widget.tuple.quantity;
       _boxValue = widget.tuple.value;
+      _boxLabel = widget.tuple.label;
       _boxQuantityController.text = widget.formatter.format(_boxQuantity.toString());
       _boxValueController.text = widget.formatter.format(_boxValue.toString());
-      _boxQuantityController.selection = TextSelection.fromPosition(TextPosition(offset: _boxQuantityController.text.length));
+      _boxLabelController.text = _boxLabel;
+      _boxQuantityController.selection =
+          TextSelection.fromPosition(TextPosition(offset: _boxQuantityController.text.length));
       _boxValueController.selection = TextSelection.fromPosition(TextPosition(offset: _boxValueController.text.length));
+      _boxLabelController.selection = TextSelection.fromPosition(TextPosition(offset: _boxLabelController.text.length));
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final width = MediaQuery.of(context).size.width;
     return Row(
       children: [
-        Expanded(
+        Container(
+          constraints: BoxConstraints.tightForFinite(width: max(width * 0.1, 100)),
           child: _getBoxQuantityField(),
         ),
         const SizedBox(width: 16),
-        Expanded(
+        Container(
+          constraints: BoxConstraints.tightForFinite(width: max(width * 0.15, 200)),
           child: _getBoxValueField(),
+        ),
+        const SizedBox(width: 16),
+        Expanded(
+          child: _getBoxLabelField(),
         ),
         Padding(
           padding: const EdgeInsets.all(8),
           child: IconButton(
-            icon: const Icon(Icons.delete, color: Colors.red),
-            onPressed: () => widget.onRemoved(widget.index, Tuple(_boxQuantity, _boxValue)),
+            icon: const Icon(Icons.delete),
+            onPressed: () {
+              final tuple = Tuple(_boxQuantity, _boxValue, _boxLabel);
+              widget.onRemoved(widget.index, tuple);
+            },
           ),
         ),
       ],
