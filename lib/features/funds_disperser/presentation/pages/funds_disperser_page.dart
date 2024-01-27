@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:currency_text_input_formatter/currency_text_input_formatter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
@@ -29,8 +31,8 @@ class FundsDisperserPage extends StatelessWidget {
   static GoRoute goRoute({FundsDisperserPageArgs arguments = const FundsDisperserPageArgs(), String? title}) =>
       GoRoute(name: title, path: name, builder: (context, state) => FundsDisperserPage(arguments: arguments));
 
-  static Route route({FundsDisperserPageArgs arguments = const FundsDisperserPageArgs(), String? title}) => CupertinoPageRoute(
-      builder: (_) => FundsDisperserPage(arguments: arguments), title: title, settings: RouteSettings(name: name, arguments: arguments));
+  static Route route({FundsDisperserPageArgs arguments = const FundsDisperserPageArgs(), String? title}) =>
+      CupertinoPageRoute(builder: (_) => FundsDisperserPage(arguments: arguments), title: title, settings: RouteSettings(name: name, arguments: arguments));
 
   static Page page({FundsDisperserPageArgs arguments = const FundsDisperserPageArgs(), String? title}) =>
       CupertinoPage(child: const FundsDisperserPage(arguments: FundsDisperserPageArgs()), title: title, name: name, arguments: arguments);
@@ -97,6 +99,7 @@ class _ContentState extends State<_Content> {
   final _feeKey = GlobalKey<FormFieldState<String>>();
   final _expensesKey = GlobalKey<FormFieldState<String>>();
   final List<Tuple> _assetList = [];
+  final List<Tuple> _expenseList = [];
 
   final CurrencyTextInputFormatter _formatter = CurrencyTextInputFormatter(
     decimalDigits: 0,
@@ -208,7 +211,7 @@ class _ContentState extends State<_Content> {
     // TODO: implement initState
     super.initState();
     if (_assetList.isEmpty) {
-      _assetList.add(const Tuple(1, 20000));
+      _assetList.add(const Tuple(1, 20000, ""));
       _value = _calculatePayout(_assetList, _partyMembers, _feePercentage, _expensesAmount);
     }
     _partyMembersController = TextEditingController(text: _formatter.format(_partyMembers.toString()));
@@ -227,6 +230,22 @@ class _ContentState extends State<_Content> {
   void _onChanged(int index, Tuple tuple) {
     setState(() {
       _assetList[index] = tuple;
+      _value = _calculatePayout(_assetList, _partyMembers, _feePercentage, _expensesAmount);
+    });
+  }
+
+  void _onExpenseRemoved(int index, Tuple tuple) {
+    setState(() {
+      _expenseList.removeAt(index);
+      _expensesAmount = _expenseList.map((e) => e.quantity * e.value).reduceOrDefault((value, element) => value + element, () => 0);
+      _value = _calculatePayout(_assetList, _partyMembers, _feePercentage, _expensesAmount);
+    });
+  }
+
+  void _onExpenseChanged(int index, Tuple tuple) {
+    setState(() {
+      _expenseList[index] = tuple;
+      _expensesAmount = _expenseList.map((e) => e.quantity * e.value).reduceOrDefault((value, element) => value + element, () => 0);
       _value = _calculatePayout(_assetList, _partyMembers, _feePercentage, _expensesAmount);
     });
   }
@@ -263,20 +282,20 @@ class _ContentState extends State<_Content> {
     );
   }
 
-  Widget _getExpensesField() {
-    return TextFormField(
-      key: _expensesKey,
-      controller: _expensesController,
-      decoration: const InputDecoration(
-        labelText: "Total Expenses for trip (optional)",
-        helperText: "Leave blank if not applicable",
-      ),
-      style: const TextStyle(fontSize: 20),
-      autovalidateMode: AutovalidateMode.onUserInteraction,
-      onChanged: _expensesChanged,
-      validator: (value) => _parseFloatValidator(value, min: 0, allowEmpty: true),
-    );
-  }
+  // Widget _getExpensesField() {
+  //   return TextFormField(
+  //     key: _expensesKey,
+  //     controller: _expensesController,
+  //     decoration: const InputDecoration(
+  //       labelText: "Total Expenses for trip (optional)",
+  //       helperText: "Leave blank if not applicable",
+  //     ),
+  //     style: const TextStyle(fontSize: 20),
+  //     autovalidateMode: AutovalidateMode.onUserInteraction,
+  //     onChanged: _expensesChanged,
+  //     validator: (value) => _parseFloatValidator(value, min: 0, allowEmpty: true),
+  //   );
+  // }
 
   Widget _getPayoutField() {
     return TextFormField(
@@ -293,30 +312,28 @@ class _ContentState extends State<_Content> {
         border: InputBorder.none,
         suffix: Text(
           "aUEC",
-          style: Theme
-              .of(context)
-              .textTheme
-              .bodySmall,
+          style: Theme.of(context).textTheme.bodySmall,
         ),
         prefix: Text(
           "Payout / member",
-          style: Theme
-              .of(context)
-              .textTheme
-              .titleMedium,
+          style: Theme.of(context).textTheme.titleMedium,
         ),
       ),
-      style: Theme
-          .of(context)
-          .textTheme
-          .displaySmall
-          ?.copyWith(color: Colors.red),
+      style: Theme.of(context).textTheme.displaySmall?.copyWith(color: Colors.red),
     );
   }
 
   void _addBox() {
     setState(() {
-      _assetList.add(const Tuple(1, 20000));
+      _assetList.add(const Tuple(1, 20000, ""));
+      _value = _calculatePayout(_assetList, _partyMembers, _feePercentage, _expensesAmount);
+    });
+  }
+
+  void _addExpenseBox() {
+    setState(() {
+      _expenseList.add(const Tuple(1, 1000, ""));
+      _expensesAmount = _expenseList.map((e) => e.quantity * e.value).reduceOrDefault((value, element) => value + element, () => 0);
       _value = _calculatePayout(_assetList, _partyMembers, _feePercentage, _expensesAmount);
     });
   }
@@ -335,6 +352,21 @@ class _ContentState extends State<_Content> {
       );
     });
 
+    final expenseItems = _expenseList.map((e) {
+      final index = _expenseList.indexOf(e);
+      return _TupleEntry(
+        showQuantity: false,
+        last: index == _assetList.length,
+        index: index,
+        tuple: e,
+        onChanged: _onExpenseChanged,
+        onRemoved: _onExpenseRemoved,
+        formatter: _formatter,
+        boxNameLabel: "Name / Category",
+        boxValueLabel: "Amount",
+      );
+    });
+
     return FormFactorBuilder(
       builder: (context, _, screenType) {
         bool preferVertical = screenType == ScreenType.handset;
@@ -345,10 +377,7 @@ class _ContentState extends State<_Content> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // title
-              Text("Party Funds Disperser", style: Theme
-                  .of(context)
-                  .textTheme
-                  .headlineMedium),
+              Text("Party Funds Disperser", style: Theme.of(context).textTheme.headlineMedium),
 
               const SizedBox(
                 height: 4,
@@ -357,10 +386,7 @@ class _ContentState extends State<_Content> {
               // description
               Text(
                 "This tool will help you to calculate how much money each party member should receive after a hunt. For use in missions that contain dispensed boxes e.g. Jumptown",
-                style: Theme
-                    .of(context)
-                    .textTheme
-                    .bodySmall,
+                style: Theme.of(context).textTheme.bodySmall,
               ),
 
               // divider
@@ -370,10 +396,7 @@ class _ContentState extends State<_Content> {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text("Assets List", style: Theme
-                      .of(context)
-                      .textTheme
-                      .titleLarge),
+                  Text("Assets List", style: Theme.of(context).textTheme.titleLarge),
 
                   // form - box quantity and box value with min value and validator
                   ...items,
@@ -384,84 +407,73 @@ class _ContentState extends State<_Content> {
                     onPressed: _addBox,
                   ),
 
-                  const SizedBox(height: 16),
+                  const SizedBox(height: 48),
 
                   // form - number of party members
                   preferVertical
                       ? Column(
-                    children: [
-                      _getPartyMembersField(),
-                    ],
-                  )
+                          children: [
+                            _getPartyMembersField(),
+                          ],
+                        )
                       : Row(
-                    children: [
-                      Expanded(
-                        child: _getPartyMembersField(),
-                      ),
-                      const Spacer(),
-                    ],
-                  ),
-                  const SizedBox(height: 16),
+                          children: [
+                            Expanded(
+                              child: _getPartyMembersField(),
+                            ),
+                            const Spacer(),
+                          ],
+                        ),
+                  const SizedBox(height: 48),
 
                   // form - optional tax percentage / payout fee amount
                   preferVertical
                       ? Column(
-                    children: [
-                      _getFeeField(),
-                    ],
-                  )
+                          children: [
+                            _getFeeField(),
+                          ],
+                        )
                       : Row(
-                    children: [
-                      Expanded(child: _getFeeField()),
-                      const Spacer(),
-                    ],
-                  ),
-                  const SizedBox(height: 16),
-
-                  const Divider(color: Colors.black26),
+                          children: [
+                            Expanded(child: _getFeeField()),
+                            const Spacer(),
+                          ],
+                        ),
+                  const SizedBox(height: 48),
 
                   // form - optional expenses
-                  const SizedBox(height: 16),
-                  Text("Expenses", style: Theme
-                      .of(context)
-                      .textTheme
-                      .titleLarge),
-
-                  preferVertical
-                      ? Column(
-                    children: [
-                      _getExpensesField(),
-                    ],
-                  )
-                      : Row(
-                    children: [
-                      Expanded(child: _getExpensesField()),
-                      const Spacer(),
-                    ],
+                  Text("Expenses", style: Theme.of(context).textTheme.titleLarge),
+                  ...expenseItems,
+                  const SizedBox(height: 8),
+                  ElevatedButton.icon(
+                    icon: const Icon(Icons.add),
+                    label: const Text("Add expense"),
+                    onPressed: _addExpenseBox,
                   ),
-                  const SizedBox(height: 16),
+
+                  const SizedBox(height: 32),
                 ],
               ),
 
               // divider
               const Divider(color: Colors.black26),
-              const SizedBox(height: 16),
+              const SizedBox(height: 48),
 
               // calculation value
               preferVertical
                   ? Column(
-                children: [
-                  _getPayoutField(),
-                ],
-              )
+                      children: [
+                        _getPayoutField(),
+                      ],
+                    )
                   : Row(
-                children: [
-                  Expanded(
-                    child: _getPayoutField(),
-                  ),
-                  const Spacer(),
-                ],
-              ),
+                      children: [
+                        Expanded(
+                          child: _getPayoutField(),
+                        ),
+                        const Spacer(),
+                      ],
+                    ),
               _PayoutMultiplier(value: _value),
 
               const SizedBox(height: 16),
@@ -472,27 +484,12 @@ class _ContentState extends State<_Content> {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text("Calculation", style: Theme
-                      .of(context)
-                      .textTheme
-                      .titleSmall),
+                  Text("Calculation", style: Theme.of(context).textTheme.titleSmall),
                   const SizedBox(height: 4),
-                  Text("Gross = Number of Boxes x Box Value", style: Theme
-                      .of(context)
-                      .textTheme
-                      .bodySmall),
-                  Text("Net = Gross - Expenses", style: Theme
-                      .of(context)
-                      .textTheme
-                      .bodySmall),
-                  Text("After Tax = Net x Tax Multiplier", style: Theme
-                      .of(context)
-                      .textTheme
-                      .bodySmall),
-                  Text("Payout / member = After Tax / Number of Party Members", style: Theme
-                      .of(context)
-                      .textTheme
-                      .bodySmall),
+                  Text("Gross = Number of Boxes x Box Value", style: Theme.of(context).textTheme.bodySmall),
+                  Text("Net = Gross - Expenses", style: Theme.of(context).textTheme.bodySmall),
+                  Text("After Tax = Net x Tax Multiplier", style: Theme.of(context).textTheme.bodySmall),
+                  Text("Payout / member = After Tax / Number of Party Members", style: Theme.of(context).textTheme.bodySmall),
                 ],
               ),
             ],
@@ -517,10 +514,7 @@ class _PayoutMultiplier extends StatelessWidget {
     final amount = _formatter.format((value * index).toStringAsFixed(0));
     return Text(
       "x$index = $amount aUEC",
-      style: Theme
-          .of(context)
-          .textTheme
-          .bodySmall,
+      style: Theme.of(context).textTheme.bodySmall,
     );
   }
 
@@ -540,12 +534,18 @@ class _PayoutMultiplier extends StatelessWidget {
 class Tuple {
   final int quantity;
   final double value;
+  final String label;
 
-  const Tuple(this.quantity, this.value);
+  const Tuple(this.quantity, this.value, this.label);
+
+  const Tuple.empty()
+      : quantity = 0,
+        value = 0,
+        label = "";
 
   @override
   String toString() {
-    return "Tuple(quantity: $quantity, value: $value)";
+    return "Tuple(quantity: $quantity, value: $value, label: $label)";
   }
 }
 
@@ -553,6 +553,7 @@ typedef OnTupleChanged = void Function(int index, Tuple tuple);
 typedef OnTupleRemoved = void Function(int index, Tuple tuple);
 
 class _TupleEntry extends StatefulWidget {
+  final bool showQuantity;
   final bool last;
   final int index;
   final CurrencyTextInputFormatter formatter;
@@ -560,14 +561,22 @@ class _TupleEntry extends StatefulWidget {
   final OnTupleRemoved onRemoved;
   final Tuple tuple;
 
+  final String? boxQuantityLabel;
+  final String? boxValueLabel;
+  final String? boxNameLabel;
+
   const _TupleEntry({
     Key? key,
     this.last = false,
+    this.showQuantity = true,
     required this.index,
     required this.tuple,
     required this.formatter,
     required this.onChanged,
     required this.onRemoved,
+    this.boxQuantityLabel,
+    this.boxValueLabel,
+    this.boxNameLabel,
   }) : super(key: key);
 
   @override
@@ -577,18 +586,35 @@ class _TupleEntry extends StatefulWidget {
 class _TupleEntryState extends State<_TupleEntry> {
   late TextEditingController _boxQuantityController;
   late TextEditingController _boxValueController;
+
+  late TextEditingController _boxLabelController;
   final _boxQuantityKey = GlobalKey<FormFieldState<String>>();
   final _boxValueKey = GlobalKey<FormFieldState<String>>();
+
+  final _boxLabelKey = GlobalKey<FormFieldState<String>>();
   int _boxQuantity = 1;
   double _boxValue = 20000;
+  String _boxLabel = "";
+
+  String? _overrideQuantityLabel;
+  String? _overrideValueLabel;
+  String? _overrideNameLabel;
+
+  bool _showQuantity = true;
 
   @override
   void initState() {
     super.initState();
+    _showQuantity = widget.showQuantity;
     _boxQuantity = widget.tuple.quantity;
     _boxValue = widget.tuple.value;
+    _boxLabel = widget.tuple.label;
+    _overrideQuantityLabel = widget.boxQuantityLabel;
+    _overrideValueLabel = widget.boxValueLabel;
+    _overrideNameLabel = widget.boxNameLabel;
     _boxQuantityController = TextEditingController(text: widget.formatter.format(_boxQuantity.toString()));
     _boxValueController = TextEditingController(text: widget.formatter.format(_boxValue.toString()));
+    _boxLabelController = TextEditingController(text: _boxLabel);
   }
 
   String? _parseIntValidator(String? value, {int? min, int? max}) {
@@ -630,14 +656,15 @@ class _TupleEntryState extends State<_TupleEntry> {
     return TextFormField(
       key: _boxQuantityKey,
       controller: _boxQuantityController,
-      decoration: const InputDecoration(
-        labelText: "Number of boxes",
+      decoration: InputDecoration(
+        labelText: _overrideQuantityLabel ?? "Number of boxes",
         hintText: "120",
       ),
       inputFormatters: [
         widget.formatter,
       ],
       style: const TextStyle(fontSize: 20),
+      textInputAction: TextInputAction.next,
       autovalidateMode: AutovalidateMode.onUserInteraction,
       validator: (value) => _parseIntValidator(value, min: 0),
       onChanged: _boxQuantityChanged,
@@ -651,15 +678,35 @@ class _TupleEntryState extends State<_TupleEntry> {
       inputFormatters: [
         widget.formatter,
       ],
-      decoration: const InputDecoration(
-        labelText: "Box Value",
+      decoration: InputDecoration(
+        labelText: _overrideValueLabel ?? "Box Value",
         hintText: "20000",
         suffix: Text("aUEC"),
       ),
+      textInputAction: TextInputAction.next,
       style: const TextStyle(fontSize: 20),
       autovalidateMode: AutovalidateMode.onUserInteraction,
       validator: (value) => _parseFloatValidator(value, min: 0),
       onChanged: _boxValueChanged,
+    );
+  }
+
+  Widget _getBoxLabelField({bool last = false}) {
+    return TextFormField(
+      key: _boxLabelKey,
+      controller: _boxLabelController,
+      decoration: InputDecoration(
+        labelText: _overrideNameLabel ?? "Commodity/Asset Name",
+        hintText: "",
+      ),
+      textInputAction: last ? TextInputAction.done : TextInputAction.next,
+      style: const TextStyle(fontSize: 20),
+      autovalidateMode: AutovalidateMode.onUserInteraction,
+      onChanged: (value) {
+        setState(() {
+          _boxLabel = value;
+        });
+      },
     );
   }
 
@@ -674,7 +721,7 @@ class _TupleEntryState extends State<_TupleEntry> {
   }
 
   void _onChanged() {
-    widget.onChanged(widget.index, Tuple(_boxQuantity, _boxValue));
+    widget.onChanged(widget.index, Tuple(_boxQuantity, _boxValue, _boxLabel));
   }
 
   void _boxValueChanged(String value) {
@@ -693,29 +740,44 @@ class _TupleEntryState extends State<_TupleEntry> {
     if (widget.tuple != oldWidget.tuple) {
       _boxQuantity = widget.tuple.quantity;
       _boxValue = widget.tuple.value;
+      _boxLabel = widget.tuple.label;
       _boxQuantityController.text = widget.formatter.format(_boxQuantity.toString());
       _boxValueController.text = widget.formatter.format(_boxValue.toString());
+      _boxLabelController.text = _boxLabel;
       _boxQuantityController.selection = TextSelection.fromPosition(TextPosition(offset: _boxQuantityController.text.length));
       _boxValueController.selection = TextSelection.fromPosition(TextPosition(offset: _boxValueController.text.length));
+      _boxLabelController.selection = TextSelection.fromPosition(TextPosition(offset: _boxLabelController.text.length));
+      _showQuantity = widget.showQuantity;
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final width = MediaQuery.of(context).size.width;
     return Row(
       children: [
-        Expanded(
-          child: _getBoxQuantityField(),
+        if(_showQuantity)
+          Container(
+            constraints: BoxConstraints.tightForFinite(width: max(width * 0.1, 100)),
+            child: _getBoxQuantityField(),
+          ),
+        const SizedBox(width: 16),
+        Container(
+          constraints: BoxConstraints.tightForFinite(width: max(width * 0.15, 200)),
+          child: _getBoxValueField(),
         ),
         const SizedBox(width: 16),
         Expanded(
-          child: _getBoxValueField(),
+          child: _getBoxLabelField(),
         ),
         Padding(
           padding: const EdgeInsets.all(8),
           child: IconButton(
-            icon: const Icon(Icons.delete, color: Colors.red),
-            onPressed: () => widget.onRemoved(widget.index, Tuple(_boxQuantity, _boxValue)),
+            icon: const Icon(Icons.delete),
+            onPressed: () {
+              final tuple = Tuple(_boxQuantity, _boxValue, _boxLabel);
+              widget.onRemoved(widget.index, tuple);
+            },
           ),
         ),
       ],
